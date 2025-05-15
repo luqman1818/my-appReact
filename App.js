@@ -1,12 +1,22 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+//import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import CustomButton from './components/CustomButton';
+import MainNavigation from './navigation/MainNavigation';
+import BoxContainer from './components/BoxContainer';
+
+
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    // <View style ={styles.container}>
+    //   <BoxContainer></BoxContainer>
+    //  {/* <CustomButton></CustomButton> */}
+    // </View>
+
+    <>
+      <MainNavigation />
+    </>
   );
 }
 

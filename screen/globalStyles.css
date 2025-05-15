@@ -1,0 +1,5 @@
+/* globalStyles.css */
+html, body {
+    height: 100%; /* ou height: 100vh; */
+    overflow: visible; /* ou auto */
+  }
