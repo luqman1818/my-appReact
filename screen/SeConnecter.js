@@ -1,34 +1,59 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert, ActivityIndicator, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
 
 const SeConnecter = ({ navigation, setIsLoggedIn }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    // Simple validation for email format
+  const handleLogin = async () => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (!emailRegex.test(email)) {
       Alert.alert("Erreur", "Veuillez entrer un email valide !");
       return;
     }
 
-    setIsLoading(true); // Show loading indicator
+    setIsLoading(true);
 
-    // Simulate a login request with a timeout
-    setTimeout(() => {
-      if (email === "test@email.com" && password === "1234") {
-        Alert.alert("Connexion réussie", "Bienvenue !");
-        setIsLoggedIn(true); // Connexion réussie
+    try {
+      const response = await fetch("http://luqfoot.test/api/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+           email_use: email,     // nom du champ attendu par l'API Laravel
+           mdp_use: password, 
+        }),
+      });
+
+      const data = await response.json();
+      console.log("Réponse API :", data);
+
+      if (data.access_token) {
+        Alert.alert("Connexion réussie", `Bienvenue ${data.user.prenom_use} !`);
+        setIsLoggedIn(true);
         setEmail("");
-        setPassword(""); // Reset fields after successful login
-        navigation.navigate("Maillots"); // Rediriger vers Maillots
+        setPassword("");
+        navigation.replace("Maillots"); 
       } else {
-        Alert.alert("Erreur", "Email ou mot de passe incorrect !");
+        Alert.alert("Erreur", data.message || "Identifiants incorrects.");
       }
-      setIsLoading(false); // Hide loading indicator
-    }, 1000); // Simulate network delay
+    } catch (error) {
+      console.error("Erreur API :", error);
+      Alert.alert("Erreur", "Impossible de se connecter au serveur.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -41,6 +66,7 @@ const SeConnecter = ({ navigation, setIsLoggedIn }) => {
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
       />
 
       <TextInput
