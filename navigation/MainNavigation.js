@@ -33,13 +33,13 @@ const MainNavigation = () => {
         {/* Page des maillots (accessible après connexion) */}
         <Stack.Screen name="Maillots">
           {(props) => (
-            <Maillots {...props} isLoggedIn={isLoggedIn} panier={panier} setPanier={setPanier} />
+            <Maillots {...props} panier={panier} setPanier={setPanier} />
           )}
         </Stack.Screen>
 
         {/* Page du panier */}
         <Stack.Screen name="Panier">
-          {(props) => <Panier {...props} panier={panier} />}
+          {(props) => <Panier {...props} panier={panier} setPanier={setPanier} />}
         </Stack.Screen>
 
         {/* Page de détail de la commande */}
