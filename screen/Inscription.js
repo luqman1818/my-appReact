@@ -1,19 +1,26 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 
 const Inscription = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [birthDate, setBirthDate] = useState(''); // Format JJ/MM/AAAA ou autre à préciser
+  const [birthDate, setBirthDate] = useState('');
   const [streetAddress, setStreetAddress] = useState('');
   const [locality, setLocality] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSubmit = () => {
-    // Validation simple pour l'email et la confirmation du mot de passe
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  const handleSubmit = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(email)) {
       Alert.alert('Erreur', 'Veuillez entrer un email valide');
       return;
@@ -29,97 +36,60 @@ const Inscription = ({ navigation }) => {
       return;
     }
 
-    // Ici, vous pouvez ajouter la logique pour envoyer les données d'inscription
-    // Incluant firstName, lastName, birthDate, streetAddress, locality, email et password
-    console.log('Données à envoyer:', {
-      firstName,
-      lastName,
-      birthDate,
-      streetAddress,
-      locality,
-      email,
-      password,
-    });
+    try {
+      const response = await fetch('http://luqfoot.test/api/register/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          prenom_use: firstName,
+          nom_use: lastName,
+          date_naissance_use: birthDate,
+          adresse_use: streetAddress,
+          localite_use: locality,
+          email_use: email,
+          mdp_use: password,
+        }),
+      });
 
-    // Simuler l'envoi des données
-    Alert.alert('Succès', 'Inscription réussie');
+      const data = await response.json();
+      console.log('✅ Réponse API:', data);
 
-    // Réinitialiser les champs
-    setFirstName('');
-    setLastName('');
-    setBirthDate('');
-    setStreetAddress('');
-    setLocality('');
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
-
-    // Naviguer vers la page HomeScreen après l'inscription
-    navigation.navigate('HomeScreen');
+      if (response.ok) {
+        Alert.alert('Succès', 'Inscription réussie', [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'HomeScreen' }],
+              });
+            },
+          },
+        ]);
+      } else {
+        Alert.alert('Erreur', data.message || 'Inscription échouée');
+      }
+    } catch (error) {
+      console.error('❌ Erreur de connexion:', error);
+      Alert.alert('Erreur', 'Impossible de contacter le serveur');
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Inscription</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Prénom"
-        value={firstName}
-        onChangeText={setFirstName}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Nom"
-        value={lastName}
-        onChangeText={setLastName}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Date d'anniversaire (JJ/MM/AAAA)"
-        value={birthDate}
-        onChangeText={setBirthDate}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Rue"
-        value={streetAddress}
-        onChangeText={setStreetAddress}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Localité"
-        value={locality}
-        onChangeText={setLocality}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Mot de passe"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Confirmer le mot de passe"
-        secureTextEntry
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-      />
+      <TextInput style={styles.input} placeholder="Prénom" value={firstName} onChangeText={setFirstName} />
+      <TextInput style={styles.input} placeholder="Nom" value={lastName} onChangeText={setLastName} />
+      <TextInput style={styles.input} placeholder="Date de naissance (JJ-MM-AAAA)"value={birthDate} onChangeText={setBirthDate} />
+      <TextInput style={styles.input} placeholder="Rue" value={streetAddress} onChangeText={setStreetAddress} />
+      <TextInput style={styles.input} placeholder="Localité" value={locality} onChangeText={setLocality} />
+      <TextInput style={styles.input} placeholder="Email" keyboardType="email-address" value={email} onChangeText={setEmail} />
+      <TextInput style={styles.input} placeholder="Mot de passe" secureTextEntry value={password} onChangeText={setPassword} />
+      <TextInput style={styles.input} placeholder="Confirmer le mot de passe" secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword} />
 
       <Button title="S'inscrire" onPress={handleSubmit} />
     </View>
@@ -127,17 +97,8 @@ const Inscription = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
   input: {
     width: '80%',
     height: 40,
