@@ -1,53 +1,71 @@
-import React, { useState } from "react";
-import { createStackNavigator } from "@react-navigation/stack";
-import { NavigationContainer } from "@react-navigation/native";
-import HomeScreen from "../screen/HomeScreen";
-import SeConnecter from "../screen/SeConnecter";
-import Inscription from "../screen/Inscription";
-import Maillots from "../screen/Maillots";
-import Panier from "../screen/Panier";
-import DetailScreen from "../screen/DetailScreen";
-import '../screen/globalStyles.css';
+  import React, { useState } from "react";
+  import { createStackNavigator } from "@react-navigation/stack";
+  import { NavigationContainer } from "@react-navigation/native";
 
+  import HomeScreen from "../screen/HomeScreen";
+  import SeConnecter from "../screen/SeConnecter";
+  import Inscription from "../screen/Inscription";
+  import Maillots from "../screen/Maillots";
+  import Panier from "../screen/Panier";
+  import DetailScreen from "../screen/DetailScreen";
 
-const Stack = createStackNavigator();
+  import "../screen/globalStyles.css";
 
-const MainNavigation = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [panier, setPanier] = useState([]);
+  const Stack = createStackNavigator();
 
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {/* Page d'accueil */}
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+  const MainNavigation = () => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userEmail, setUserEmail] = useState(""); // ✅ email de l'utilisateur connecté
+    const [panier, setPanier] = useState([]);
 
-        {/* Page de connexion */}
-        <Stack.Screen name="SeConnecter">
-          {(props) => <SeConnecter {...props} setIsLoggedIn={setIsLoggedIn} />}
-        </Stack.Screen>
+    return (
+      <NavigationContainer>
+        <Stack.Navigator>
+          {/* Page d'accueil */}
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
 
-        {/* Page d'inscription */}
-        <Stack.Screen name="Inscription" component={Inscription} />
+          {/* Page de connexion */}
+          <Stack.Screen name="SeConnecter">
+            {(props) => (
+              <SeConnecter
+                {...props}
+                setIsLoggedIn={setIsLoggedIn}
+                setUserEmail={setUserEmail} // ✅ on passe setUserEmail
+              />
+            )}
+          </Stack.Screen>
 
-        {/* Page des maillots (accessible après connexion) */}
-        <Stack.Screen name="Maillots">
-          {(props) => (
-            <Maillots {...props} panier={panier} setPanier={setPanier} />
-          )}
-        </Stack.Screen>
+          {/* Page d'inscription */}
+          <Stack.Screen name="Inscription" component={Inscription} />
 
-        {/* Page du panier */}
-        <Stack.Screen name="Panier">
-          {(props) => <Panier {...props} panier={panier} setPanier={setPanier} />}
-        </Stack.Screen>
+          {/* Page des maillots (accessible après connexion) */}
+          <Stack.Screen name="Maillots">
+            {(props) => (
+              <Maillots
+                {...props}
+                panier={panier}
+                setPanier={setPanier}
+              />
+            )}
+          </Stack.Screen>
 
-        {/* Page de détail de la commande */}
-        <Stack.Screen name="DetailScreen" component={DetailScreen} />
+          {/* Page du panier */}
+          <Stack.Screen name="Panier">
+            {(props) => (
+              <Panier
+                {...props}
+                panier={panier}
+                setPanier={setPanier}
+                userEmail={userEmail} // ✅ on transmet l'email à Panier
+              />
+            )}
+          </Stack.Screen>
 
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-};
+          {/* Page de détail de la commande */}
+          <Stack.Screen name="DetailScreen" component={DetailScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  };
 
-export default MainNavigation;
+  export default MainNavigation;

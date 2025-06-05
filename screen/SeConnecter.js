@@ -9,7 +9,7 @@ import {
   StyleSheet,
 } from "react-native";
 
-const SeConnecter = ({ navigation, setIsLoggedIn }) => {
+const SeConnecter = ({ navigation, setIsLoggedIn, setUserEmail }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -31,8 +31,8 @@ const SeConnecter = ({ navigation, setIsLoggedIn }) => {
           Accept: "application/json",
         },
         body: JSON.stringify({
-           email_use: email,     // nom du champ attendu par l'API Laravel
-           mdp_use: password, 
+          email_use: email,    // nom des champs attendus par Laravel
+          mdp_use: password,
         }),
       });
 
@@ -41,10 +41,11 @@ const SeConnecter = ({ navigation, setIsLoggedIn }) => {
 
       if (data.access_token) {
         Alert.alert("Connexion réussie", `Bienvenue ${data.user.prenom_use} !`);
-        setIsLoggedIn(true);
-        setEmail("");
-        setPassword("");
-        navigation.replace("Maillots"); 
+        setIsLoggedIn(true);              // ✅ connecté
+        setUserEmail(data.user.email_use); // ✅ stocke l'email
+        setEmail("");                     // nettoie le champ email
+        setPassword("");                  // nettoie le champ mot de passe
+        navigation.replace("Maillots");   // ✅ redirection
       } else {
         Alert.alert("Erreur", data.message || "Identifiants incorrects.");
       }

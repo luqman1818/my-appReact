@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, FlatList, Button, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 const Panier = ({ panier, setPanier }) => {
@@ -16,6 +23,11 @@ const Panier = ({ panier, setPanier }) => {
     setPanier(nouveauPanier);
   };
 
+  const handleValidation = () => {
+    setPanier([]); // Vide le panier
+    navigation.navigate("Maillots"); // Va sur la page Maillots
+  };
+
   const renderItem = ({ item, index }) => (
     <View style={styles.card}>
       <Text style={styles.nom}>{item.nom_shi}</Text>
@@ -25,7 +37,10 @@ const Panier = ({ panier, setPanier }) => {
       <Text style={styles.sousTotal}>
         Total : {item.prix_shi * item.quantite} €
       </Text>
-      <TouchableOpacity onPress={() => supprimerArticle(index)} style={styles.deleteButton}>
+      <TouchableOpacity
+        onPress={() => supprimerArticle(index)}
+        style={styles.deleteButton}
+      >
         <Text style={styles.deleteText}>Supprimer ❌</Text>
       </TouchableOpacity>
     </View>
@@ -38,25 +53,17 @@ const Panier = ({ panier, setPanier }) => {
       {panier.length === 0 ? (
         <Text style={styles.vide}>Votre panier est vide.</Text>
       ) : (
-        <FlatList
-          data={panier}
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={renderItem}
-        />
-      )}
+        <>
+          <FlatList
+            data={panier}
+            keyExtractor={(_, index) => index.toString()}
+            renderItem={renderItem}
+          />
 
-      <Text style={styles.total}>Total à payer : {total} €</Text>
+          <Text style={styles.total}>Total à payer : {total} €</Text>
 
-      {panier.length > 0 && (
-        <Button
-          title="Valider la commande"
-          onPress={() =>
-            navigation.navigate("Recapitulatif", {
-              panier,
-              total,
-            })
-          }
-        />
+          <Button title="Valider la commande" onPress={handleValidation} />
+        </>
       )}
     </View>
   );
